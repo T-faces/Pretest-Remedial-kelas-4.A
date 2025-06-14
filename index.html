@@ -1,11 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRETEST REMEDIAL KELAS 4.A</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 15px;
+    }
+    .hidden {
+      display: none;
+    }
+    button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+    .result {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
+<div class="container">
+  <h1>PRETEST REMEDIAL KELAS 4.A</h1>
+
+  <div id="identity-form">
+    <p><strong>Masukkan Data Diri</strong></p>
+    <label>Nama: <input type="text" id="nama"></label><br><br>
+    <label>Kelas: <input type="text" id="kelas"></label><br><br>
+    <button onclick="startTest()">Mulai Pretest</button>
+  </div>
+
+  <form id="quiz-form" class="hidden">
+    <div id="questions"></div>
+    <button type="submit">Selesai</button>
+  </form>
+
+  <div id="result" class="hidden result"></div>
+</div>
+
+<script>
+const questions = [
+  { q: "1. Alat pernapasan manusia adalah ...", a: ["Jantung", "Paru-paru", "Hati", "Usus"], correct: 1 },
+  { q: "2. Hasil dari 36 : 6 adalah ...", a: ["4", "5", "6", "7"], correct: 2 },
+  { q: "3. Lagu 'Hari Merdeka' termasuk jenis lagu ...", a: ["Anak-anak", "Daerah", "Nasional", "Pop"], correct: 2 },
+  { q: "4. Tugas ketua kelas adalah ...", a: ["Membuat keributan", "Membantu guru", "Melanggar aturan", "Tidak hadir"], correct: 1 },
+  // Tambahkan soal sampai 20
+];
+
+function startTest() {
+  const nama = document.getElementById('nama').value.trim();
+  const kelas = document.getElementById('kelas').value.trim();
+  if (!nama || !kelas) return alert("Mohon isi nama dan kelas.");
+
+  document.getElementById('identity-form').classList.add('hidden');
+  document.getElementById('quiz-form').classList.remove('hidden');
+
+  const container = document.getElementById('questions');
+  questions.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.innerHTML = `<p>${item.q}</p>` + item.a.map((opt, i) => `
+      <label><input type="radio" name="q${index}" value="${i}" required> ${opt}</label><br>`).join('');
+    container.appendChild(div);
+  });
+}
+
+const form = document.getElementById('quiz-form');
+form.onsubmit = function(e) {
+  e.preventDefault();
+  let score = 0;
+  questions.forEach((q, i) => {
+    const selected = form[`q${i}`].value;
+    if (parseInt(selected) === q.correct) score++;
+  });
+
+  const nama = document.getElementById('nama').value;
+  const kelas = document.getElementById('kelas').value;
+  const nilai = Math.round((score / questions.length) * 100);
+
+  document.getElementById('quiz-form').classList.add('hidden');
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.remove('hidden');
+  resultDiv.innerHTML = `
+    <p>Nama: ${nama}</p>
+    <p>Kelas: ${kelas}</p>
+    <p>Skor: ${nilai}</p>
+    <button onclick="downloadHasil('${nama}', '${kelas}', ${nilai})">Unduh Hasil</button>
+  `;
+}
+
+function downloadHasil(nama, kelas, nilai) {
+  const content = `PRETEST REMEDIAL KELAS 4.A\n\nNama: ${nama}\nKelas: ${kelas}\nSkor: ${nilai}`;
+  const blob = new Blob([content], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `Hasil_${nama.replace(/\s+/g, '_')}.txt`;
+  link.click();
+}
+</script>
 </body>
 </html>
